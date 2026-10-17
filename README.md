@@ -10,7 +10,7 @@
 
 <div align="center">
 
-<img src="docs/screenshots/hero.png" alt="Sarvam Check — AI grading assistant for handwritten answer sheets" width="100%">
+<img src="screenshots/hero.png" alt="Sarvam Check — AI grading assistant for handwritten answer sheets" width="100%">
 
 # Sarvam Check
 
@@ -51,25 +51,6 @@ A three-step wizard. No training data, no per-subject setup, no model fine-tunin
 
 **3. Results** — Watch live per-student progress, then click any row to open a review drawer showing the OCR text, per-question scores and the model's feedback. Export the whole class as **CSV or a styled Excel workbook**.
 
-## Screenshots
-
-<!-- Drop the images into docs/screenshots/ with these exact names and they render below. -->
-
-**Build the rubric — questions, rubric points, marks and grading notes, with live totals.**
-
-![Marking scheme builder](docs/screenshots/01-marking-scheme.png)
-
-**Drop a ZIP of the whole class, or individual PDFs and scans. Preview before you grade.**
-
-![Upload screen](docs/screenshots/02-upload.png)
-
-**Live results, then export the class to Excel or CSV in one click.**
-
-![Results table](docs/screenshots/03-results.png)
-
-**Open any student for the OCR text, per-question marks and written feedback.**
-
-![Student review drawer](docs/screenshots/04-student-review.png)
 
 ## How it works
 
@@ -94,6 +75,13 @@ The grading prompt is engineered to behave like a careful examiner, not a summar
 - **Every score is clamped in code** to the question maximum before it reaches the sheet, so a hallucinated total cannot leak into your marks.
 - **Low temperature (0.1)** and a strict JSON contract keep the same answer graded the same way across a batch.
 
+## Screenshots
+**Build the rubric — questions, rubric points, marks and grading notes, with live totals.**
+
+![Marking scheme builder](screenshots/Main.png)
+
+**Results for each student with an anaylysis of the identified gaps in the solutions are provided**
+![Results ](screenshots/Graded.png)
 ## Features
 
 | | |
