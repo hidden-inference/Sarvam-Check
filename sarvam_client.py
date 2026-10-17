@@ -73,7 +73,21 @@ def _digitise_one(filename, data, mime, language, poll_timeout=600):
         md_files = [n for n in zf.namelist() if n.lower().endswith(".md") and not n.startswith("metadata/")]
         if not md_files:
             md_files = [n for n in zf.namelist() if n.lower().endswith((".md", ".html", ".txt"))]
-        return "\n\n".join(zf.read(n).decode("utf-8", errors="replace") for n in sorted(md_files))
+        return clean_ocr_text("\n\n".join(zf.read(n).decode("utf-8", errors="replace") for n in sorted(md_files)))
+
+
+# Document AI inlines every figure/diagram as a base64 data URI (often 500k+ chars each),
+# followed by a text description of it. Keep the description, drop the pixels.
+_MD_DATA_IMG = re.compile(r"!\[[^\]]*\]\(\s*data:[^)]*\)")
+_HTML_DATA_IMG = re.compile(r"<img\b[^>]*\bsrc\s*=\s*[\"']data:[^>]*>", re.I)
+_BARE_DATA_URI = re.compile(r"data:[\w/+.-]+;base64,[A-Za-z0-9+/=\s]{64,}")
+
+
+def clean_ocr_text(text):
+    text = _MD_DATA_IMG.sub("[Student drawing/figure]", text)
+    text = _HTML_DATA_IMG.sub("[Student drawing/figure]", text)
+    text = _BARE_DATA_URI.sub("[image data removed]", text)
+    return re.sub(r"\n{3,}", "\n\n", text).strip()
 
 
 def ocr_document(filename, data, language="en-IN"):
@@ -159,8 +173,14 @@ def _extract_json(text):
         return json.loads(m.group(0))
 
 
+MAX_ANSWER_CHARS = 250_000  # ~2.5 chars/token keeps us well inside sarvam-105b's 128k context
+
+
 def grade_answer(scheme, answer_text):
     """Ask the Sarvam LLM to grade one student's OCR'd answer sheet against the scheme."""
+    answer_text = clean_ocr_text(answer_text)
+    if len(answer_text) > MAX_ANSWER_CHARS:
+        answer_text = answer_text[:MAX_ANSWER_CHARS] + "\n\n[... answer sheet truncated: too long to grade in one pass ...]"
     user_prompt = (
         "MARKING SCHEME\n==============\n"
         + _format_scheme(scheme)
